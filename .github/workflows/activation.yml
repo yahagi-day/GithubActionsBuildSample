@@ -8,9 +8,9 @@ jobs:
     steps:
     - name: Request manual activation file # Licenceを要求する部分
       id: getManualLicenseFile
-      uses: game-ci/unity-request-actication-file@v2
+      uses: game-ci/unity-request-activation-file@v2
     - name: Expose as artifact #取得した.alfファイルをアップロードする部分
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ steps.getManualLicenseFuke.outputs.filePath }}
-        path: ${{ steps.getManualLicenseFuke.outputs.filePath }}
+        name: ${{ steps.getManualLicenseFile.outputs.filePath }}
+        path: ${{ steps.getManualLicenseFile.outputs.filePath }}
