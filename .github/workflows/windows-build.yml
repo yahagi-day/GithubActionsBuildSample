@@ -1,0 +1,45 @@
+name: Windows Build
+# コードがメインにpushされた時とpullreqが飛んできたと手動で実行されるようにする
+  
+on:
+  push:
+    branches: main
+  pull_request: 
+    branches: main
+  workflow_dispatch: {}
+
+# 連続して実行されたときに一つ前の実行中のジョブが停止されるようにする
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+jobs:
+  unity-Build:
+    name: Run the unity build steps
+    runs-on: ubuntu-latest
+    steps:
+      # Actionsがリポジトリにアクセスできるようにする
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      # LibraryをCacheしてBuildを高速化する
+      - name: Cache Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**','ProjectSettings/**') }}
+          restore-keys: Library-
+        
+      - name: Run the Windows build
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          targetPlatform: StandaloneWindows64
+          unityVersion: 2021.3.15f1
+          buildName: GithubActionsBuildSample
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: Build
+          path: build

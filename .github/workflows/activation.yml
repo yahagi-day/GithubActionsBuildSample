@@ -1,0 +1,16 @@
+name: Acquire activation file # Action名 なんでもいいがわかりやすいほうが良い
+on: # このActionsを実行するタイミングの指定
+  workflow_dispatch: {} # workflow_dispatchは手動で実行ボタンを押したときに実行される 他にもpushされた時とかpull_requetsされた時などを指定できる。
+jobs:
+  activation:
+    name: Request manual activation file
+    runs-on: ubuntu-latest # 動作するOSを制作する ubuntu以外にwindowsやmac-osが選べるが課金体系に注意！
+    steps:
+    - name: Request manual activation file # Licenceを要求する部分
+      id: getManualLicenseFile
+      uses: game-ci/unity-request-activation-file@v2
+    - name: Expose as artifact #取得した.alfファイルをアップロードする部分
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.getManualLicenseFile.outputs.filePath }}
+        path: ${{ steps.getManualLicenseFile.outputs.filePath }}
